@@ -80,8 +80,27 @@ class EC2Predictor(FMBenchPredictor):
             # For other response types, change the logic below and add the response in the `generated_text` key within the response_json dict
             response.raise_for_status()
             full_output = response.text
-            answer_only = full_output.replace(prompt, "", 1).strip('["]?\n')
-            response_json = dict(generated_text=answer_only)
+            # handle response json responses for vLLM predictions to only extract
+            # the generated text from the prediction
+            if container_type == constants.CONTAINER_TYPE_VLLM:
+                logger.info(f"Container type is {constants.CONTAINER_TYPE_VLLM}")
+                response_dict = json.loads(full_output)
+                if 'choices' in response_dict and len(response_dict['choices']) > 0:
+                    generated_text = response_dict['choices'][0]['text']
+                    response_json = dict(generated_text=generated_text)
+                else:
+                    raise ValueError("Invalid response format, missing 'choices' key or empty 'choices'")
+            elif container_type == constants.CONTAINER_TYPE_DJL:
+                answer_only = full_output.replace(prompt, "", 1).strip('["]?\n')
+                response_json = dict(generated_text=answer_only)
+            else:
+                raise ValueError(f"container_type={container_type}, don't know how to handle this")
+
+            # Handling batch inference error as concurrency level increases for DJL inference and NVIDIA GPUs
+            # If the reponse json gives a generated text with "batch inference failed", a response status code of 424
+            # or None, then raise an exception
+            if ('Batch inference failed' in response_json.get('generated_text')) or (response.status_code == 424) or (response_json is None):
+                raise requests.exceptions.RequestException("Batch inference failed or received a 424 status code")
             # counts the completion tokens for the model using the default/user provided tokenizer
             completion_tokens = count_tokens(response_json.get("generated_text"))
         except requests.exceptions.RequestException as e:
