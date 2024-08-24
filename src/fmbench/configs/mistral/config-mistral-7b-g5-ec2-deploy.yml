@@ -73,7 +73,7 @@ datasets:
     payload_file: payload_en_3000-3840.jsonl
 
 metrics:
-  dataset_of_interest: en_1000-2000
+  dataset_of_interest: en_3000-3840
   
 pricing: pricing.yml
   
@@ -100,7 +100,7 @@ experiments:
     model_name: "Mistral-7B-Instruct-v0.2"
     # this can be changed to the IP address of your specific EC2 instance where the model is hosted
     ep_name: 'http://127.0.0.1:8080/invocations' 
-    instance_type: "g5.2xlarge"
+    instance_type: "g5.12xlarge"
     image_uri: 763104351884.dkr.ecr.{region}.amazonaws.com/djl-inference:0.29.0-lmi11.0.0-cu124
     deploy: yes #setting to yes to run deployment script for ec2
     instance_count: 
@@ -138,7 +138,6 @@ experiments:
     - 2
     - 4
     - 8
-    - 10
     # Environment variables to be passed to the container
     # this is not a fixed list, you can add more parameters as applicable.
     env:

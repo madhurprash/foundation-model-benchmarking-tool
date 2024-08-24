@@ -74,12 +74,21 @@ class EC2Predictor(FMBenchPredictor):
             else:
                 raise ValueError("container_type={container_type}, dont know how to handle this") 
 
+            # For other response types, change the logic below and add the response in the `generated_text` key within the response_json dict
+            full_output = response.text
+            logger.info(f"full_output: {full_output}")
+
             # record the latency for the response generated
             latency = time.perf_counter() - st
-            
-            # For other response types, change the logic below and add the response in the `generated_text` key within the response_json dict
-            response.raise_for_status()
-            full_output = response.text
+
+            # Handling batch inference error as concurrency level increases for DJL inference and NVIDIA GPUs
+            # If the reponse json gives a generated text with "batch inference failed", a response status code of 424
+            # or None, then raise an exception
+            if ('Batch inference failed' in full_output) or (response.status_code == 424) or (full_output is None):
+                raise requests.exceptions.RequestException("Batch inference failed or received a 424 status code")
+            else:
+                logger.info("Valid response received. Logging metrics.")
+
             # handle response json responses for vLLM predictions to only extract
             # the generated text from the prediction
             if container_type == constants.CONTAINER_TYPE_VLLM:
@@ -96,14 +105,19 @@ class EC2Predictor(FMBenchPredictor):
             else:
                 raise ValueError(f"container_type={container_type}, don't know how to handle this")
 
-            # Handling batch inference error as concurrency level increases for DJL inference and NVIDIA GPUs
-            # If the reponse json gives a generated text with "batch inference failed", a response status code of 424
-            # or None, then raise an exception
-            if ('Batch inference failed' in response_json.get('generated_text')) or (response.status_code == 424) or (response_json is None):
-                raise requests.exceptions.RequestException("Batch inference failed or received a 424 status code")
             # counts the completion tokens for the model using the default/user provided tokenizer
             completion_tokens = count_tokens(response_json.get("generated_text"))
         except requests.exceptions.RequestException as e:
+            # return the full raw output as a part of the response json that gets logged in
+            # for erroneous predictions
+            response_json=dict(generated_text=full_output)
+            # # set completion tokens to non for when there are any exceptions/if the 
+            # # predictions made are erroneous to account for the error rate calculation
+            # completion_tokens = None
+            if response_json.get('generated_text') is None:
+                # if full output is None, then replace then log
+                # the generated text with an empty string
+                response_json['generated_text']=""
             logger.error(f"get_prediction, exception occurred while getting prediction for payload={payload} "
                          f"from predictor={self._endpoint_name}, response={response}, exception={e}")
         return FMBenchPredictionResponse(response_json=response_json,
