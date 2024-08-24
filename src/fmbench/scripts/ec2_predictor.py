@@ -74,12 +74,10 @@ class EC2Predictor(FMBenchPredictor):
             else:
                 raise ValueError("container_type={container_type}, dont know how to handle this") 
 
-            # For other response types, change the logic below and add the response in the `generated_text` key within the response_json dict
-            full_output = response.text
-            logger.info(f"full_output: {full_output}")
-
             # record the latency for the response generated
             latency = time.perf_counter() - st
+            # For other response types, change the logic below and add the response in the `generated_text` key within the response_json dict
+            full_output = response.text
 
             # Handling batch inference error as concurrency level increases for DJL inference and NVIDIA GPUs
             # If the reponse json gives a generated text with "batch inference failed", a response status code of 424
