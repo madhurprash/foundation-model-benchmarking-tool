@@ -13,10 +13,8 @@ CONFIG_DIR="./src/fmbench/configs/$MODEL_NAME"
 # the result folders are separately generated for each of the config file they do not
 # override each other
 CONFIG_FILES=(
-    "config-mistral-trn1-32xl-deploy-ec2-tp32-bs12.yml"
-    "config-mistral-trn1-32xl-deploy-ec2-tp32-bs8.yml"
-    "config-mistral-trn1-32xl-deploy-ec2-tp16-bs8.yml"
-    "config-mistral-trn1-32xl-deploy-ec2-tp8-bs4.yml"
+    "config-mistral-trn1-32xl-deploy-ec2-tp32.yml"
+    "config-mistral-trn1-32xl-deploy-ec2-tp16.yml"
 )
 LOGFILE="fmbench_multiple_tests_run.log"
 
