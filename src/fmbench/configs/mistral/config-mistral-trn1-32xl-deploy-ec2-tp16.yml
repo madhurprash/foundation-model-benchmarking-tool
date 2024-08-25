@@ -1,7 +1,7 @@
 # config file for a rest endpoint supported on fmbench - 
 # this file uses a llama-3-8b-instruct deployed on ec2 on an inf2 instance
 general:
-  name: "mistral-7b-trn1.32xl-tp32-ec2"      
+  name: "mistral-7b-trn1.32xl-tp16-bs8-ec2"      
   model_name: "mistral-7b-instruct"
   
 # AWS and SageMaker settings
@@ -126,7 +126,7 @@ datasets:
 # the price:performance analysis is only done for 1
 # dataset which is listed below as the dataset_of_interest
 metrics:
-  dataset_of_interest: en_3000-3840
+  dataset_of_interest: en_1000-2000
   
 # all pricing information is in the pricing.yml file
 # this file is provided in the repo. You can add entries
@@ -154,7 +154,7 @@ inference_parameters:
 # but different instance types, or different models, or even different hosting
 # options.
 experiments:
-  - name: "Mistral-7B-Instruct-v0.2-tp32"
+  - name: "Mistral-7B-Instruct-v0.2-tp16-bs8"
     # AWS region, this parameter is templatized, no need to change
     region: {region}
     # model_id is interpreted in conjunction with the deployment_script, so if you
@@ -192,7 +192,7 @@ experiments:
       engine=Python
       option.entryPoint=djl_python.transformers_neuronx
       option.model_id=mistralai/Mistral-7B-Instruct-v0.2
-      option.tensor_parallel_degree=32
+      option.tensor_parallel_degree=16
       option.n_positions=4096
       option.rolling_batch=auto
       option.max_rolling_batch_size=8
