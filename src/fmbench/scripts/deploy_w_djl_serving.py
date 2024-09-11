@@ -10,20 +10,24 @@ import os
 import glob
 import time
 import boto3
+import fmbench
 import logging
 import tarfile
 import tempfile
 import sagemaker
 from pathlib import Path
 from urllib.parse import urlparse
+from fmbench.scripts import constants
 from sagemaker.utils import name_from_base
 from huggingface_hub import snapshot_download
 from typing import Dict, List, Tuple, Optional
 
-
 # set a logger
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+# Initialize the platform where this script deploys the model
+PLATFORM: str = constants.PLATFORM_SAGEMAKER
 
 # globals
 HF_TOKEN_FNAME: str = os.path.join(os.path.dirname(os.path.realpath(__file__)),
@@ -46,6 +50,12 @@ account_id: str = sess.account_id()
 # Initialize the sagemaker and sagemaker runtime clients
 sm_client = boto3.client("sagemaker")
 
+tag = [
+    {
+        'Key': 'fmbench-version',
+        'Value': fmbench.__version__
+    }
+]
 def _download_model(model_id: str,
                     local_model_path: str,
                     allow_patterns: Optional[List] = ["*"]) -> str:
@@ -134,11 +144,13 @@ def _create_model(experiment_config: Dict,
     else:
         pc = dict(Image=inference_image_uri,
                   ModelDataUrl=s3_model_artifact)
-
+    
+    logger.info(f"Fmbench Version Tag is {tag}")
     create_model_response = sm_client.create_model(
         ModelName=model_name,
         ExecutionRoleArn=role_arn,
         PrimaryContainer=pc,
+        Tags=tag
     )
     return model_name, create_model_response["ModelArn"]
 
@@ -166,8 +178,11 @@ def _deploy_endpoint(experiment_config: Dict,
         ],
     )
 
+    logger.info(f"Fmbench Version Tag is {tag}")
     create_endpoint_response = sm_client.create_endpoint(
-        EndpointName=endpoint_name, EndpointConfigName=endpoint_config_name
+        EndpointName=endpoint_name, 
+        EndpointConfigName=endpoint_config_name, 
+        Tags=tag
     )
     return endpoint_name, create_endpoint_response['EndpointArn']
 

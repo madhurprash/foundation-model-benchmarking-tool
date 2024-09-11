@@ -40,6 +40,9 @@ theme:
   edit_uri: ''
 
 extra:
+  analytics:
+    provider: google
+    property: G-MX1DMWF4GF
   social:
     - icon: fontawesome/brands/github-alt
       link: https://github.com/aws-samples/foundation-model-benchmarking-tool
@@ -77,13 +80,15 @@ nav:
       - BYO REST predictor: byo_rest_predictor.md
       - BYO dataset: byo_dataset.md
       - Build FMBench: build.md
+      - Analytics: analytics.md
+      - Running multiple model copies: mm_copies.md
 
   - Results:
       - Report: results.md
-      - Website: internal_website.md
+      - Website: website.md
 
   - Releases:
-      - Major release: 2.0.x.md
+      - Major release: announcement.md
       - releases.md
   - Resources:
       - resources.md
