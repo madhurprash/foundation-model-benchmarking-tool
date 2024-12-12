@@ -79,7 +79,7 @@ run_steps:
   1_generate_data.ipynb: yes
   2_deploy_model.ipynb: yes
   3_run_inference.ipynb: yes
-  4_get_evaluations.ipynb: no
+  4_get_evaluations.ipynb: yes
   5_model_metric_analysis.ipynb: yes
   6_cleanup.ipynb: no
 
@@ -111,6 +111,10 @@ datasets:
     max_length_in_tokens: 1000
     payload_file: payload_en_500-1000.jsonl
   - language: en
+    min_length_in_tokens: 1
+    max_length_in_tokens: 1000
+    payload_file: payload_en_1-1000.jsonl
+  - language: en
     min_length_in_tokens: 1000
     max_length_in_tokens: 2000
     payload_file: payload_en_1000-2000.jsonl
@@ -128,7 +132,7 @@ datasets:
 # the price:performance analysis is only done for 1
 # dataset which is listed below as the dataset_of_interest
 metrics:
-  dataset_of_interest: en_500-1000
+  dataset_of_interest: en_1-1000
   
 # name of the file that contains the model evaluation information
 # for example, the prompt template names, the ground truth column name (if any), 
@@ -211,7 +215,7 @@ experiments:
     # runs are done for each combination of payload file and concurrency level
     payload_files:
     - payload_en_1-500.jsonl
-    - payload_en_500-1000.jsonl
+    - payload_en_1-1000.jsonl
     - payload_en_1000-2000.jsonl
     - payload_en_2000-3000.jsonl
     - payload_en_3000-3840.jsonl
