@@ -14,7 +14,7 @@
 </h4>
 
 
-🚨 **What's new**: Quickstart benchmarking on Amazon EC2 with the new [FMBench orchestrator](#running-fmbench-via-the-fmbench-orchestrator) 🚨  
+🚨 **What's new**: Benchmark the [Amazon Nova](https://docs.aws.amazon.com/nova/latest/userguide/what-is-nova.html) models, quickstart benchmarking on Amazon EC2 with the new [FMBench orchestrator](#running-fmbench-via-the-fmbench-orchestrator) 🚨  
 
 `FMBench` is a Python package for running performance benchmarks and accuracy for **any Foundation Model (FM)** deployed on **any AWS Generative AI service**, be it **Amazon SageMaker**, **Amazon Bedrock**, **Amazon EKS**, or **Amazon EC2**. The FMs could be deployed on these platforms either directly through `FMbench`, or, if they are already deployed then also they could be benchmarked through the **Bring your own endpoint** mode supported by `FMBench`. 
 
@@ -61,6 +61,7 @@ Llama3 is now available on SageMaker (read [blog post](https://aws.amazon.com/bl
 
 | Model                           | Amazon EC2                     | Amazon SageMaker                           | Amazon Bedrock                     |
 |:--------------------------------|:-------------------------------|:-------------------------------------------|:-----------------------------------|
+| **Amazon Nova**                  |                               |                                           | On-demand                          |
 | **Anthropic Claude-3 Sonnet**    |                               |                                           | On-demand, provisioned             |
 | **Anthropic Claude-3 Haiku**     |                               |                                           | On-demand                          |
 | **Mistral-7b-instruct**          | inf2, trn1                     | g4dn, g5, p3, p4d, p5                       | On-demand                          |
@@ -87,6 +88,10 @@ Llama3 is now available on SageMaker (read [blog post](https://aws.amazon.com/bl
 
 ## New in this release
 
+## 2.0.22
+1. Benchmarks for the [Amazon Nova](https://docs.aws.amazon.com/nova/latest/userguide/what-is-nova.html) family of models.
+1. Benchmarks for multi-modal models: LLama3.2-11B, Claude 3 Sonnet and Claude 3.5 Sonnet using the [ScienceQA](https://huggingface.co/datasets/derek-thomas/ScienceQA) dataset.
+
 ## 2.0.21
 
 1. Dynamically get EC2 pricing from Boto3 API.
@@ -94,10 +99,6 @@ Llama3 is now available on SageMaker (read [blog post](https://aws.amazon.com/bl
 
 ## 2.0.20
 1. Add `hf_tokenizer_model_id` parameter to automatically download tokenizers from Hugging Face.
-
-## 2.0.19
-1. Config files for `Llama3.1-1b` on AMD/Intel CPU instance types.
-1. Bug fixes for token counting for vLLM.
 
 
 [Release history](./release_history.md)
